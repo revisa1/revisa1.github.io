@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A browser-only inventory planning demonstration based on DLA Peak Policy.">
+  <title>Peak Policy | Portfolio Planning</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="brand-mark">P</span><span>Peak Policy <small>PORTFOLIO PLANNING</small></span></a>
+    <span class="local-pill"><i></i> Runs locally in this browser</span>
+  </header>
+  <main id="top">
+    <section class="intro">
+      <div><p class="eyebrow">DLA · INVENTORY STRATEGY</p><h1>Balance inventory<br>with readiness.</h1><p class="lede">Explore stocking policies for items with sporadic demand. Pick a balance between inventory, buyer workload, and customer wait.</p></div>
+      <div class="intro-note"><span class="note-icon">↗</span><span>20 quarters of history<br>20 resampled futures<br>7 price groups</span></div>
+    </section>
+    <section class="workspace">
+      <aside class="controls">
+        <div class="section-label">POLICY SETTINGS <span>01</span></div>
+        <label for="workload">Buyer workload limit <b id="workload-value">15,000</b><small>replenishment actions per year</small></label>
+        <input id="workload" type="range" min="0" max="40000" value="15000" step="100">
+        <div class="range-ends"><span>0</span><span>40,000</span></div>
+        <label for="wait">Customer wait limit <b id="wait-value">120 days</b><small>average days per customer order</small></label>
+        <input id="wait" type="range" min="0" max="365" value="120" step="5">
+        <div class="range-ends"><span>0</span><span>365 days</span></div>
+        <label for="seed">Random seed</label><input id="seed" class="number-input" type="number" min="0" max="2147483647" value="11">
+        <label>Price groups</label><div id="group-filters" class="group-filters"></div>
+        <button id="run" class="run-button">Recalculate portfolio <span>→</span></button>
+        <p class="control-foot">Synthetic data · reproducible with seed</p>
+      </aside>
+      <section class="results">
+        <div id="status" class="status"></div>
+        <div class="metrics">
+          <article><span>INVENTORY VALUE</span><strong id="inventory-metric">—</strong><small id="inventory-delta">Average on-hand</small></article>
+          <article><span>FULL-ORDER FILL RATE</span><strong id="fill-metric">—</strong><small id="fill-delta">Orders filled at arrival</small></article>
+          <article><span>AVERAGE CUSTOMER WAIT</span><strong id="wait-metric">—</strong><small id="wait-delta">Days per order</small></article>
+          <article><span>BUYER WORKLOAD</span><strong id="buys-metric">—</strong><small id="buys-delta">Buys per year</small></article>
+        </div>
+        <section class="chart-card">
+          <div class="card-heading"><div><p class="eyebrow">PORTFOLIO TRADE-OFF</p><h2>Service, inventory &amp; workload</h2></div><span class="chart-legend"><i></i>Selected policy <i class="baseline-dot"></i> Baseline</span></div>
+          <div class="chart-wrap"><svg id="chart" role="img" aria-label="Inventory and customer wait trade-off chart" viewBox="0 0 760 330"></svg></div>
+        </section>
+        <section class="policy-card">
+          <div class="card-heading"><div><p class="eyebrow">RECOMMENDED SETTINGS</p><h2>Price-group policies</h2></div><span id="policy-count" class="muted"></span></div>
+          <div class="table-scroll"><table><thead><tr><th>GROUP</th><th>ITEMS</th><th>M</th><th>Q</th><th>INVENTORY</th><th>BUYS/YR</th></tr></thead><tbody id="policy-table"></tbody></table></div>
+          <details><summary>View item reorder levels</summary><div class="table-scroll"><table><thead><tr><th>ITEM</th><th>PRICE</th><th>GROUP</th><th>5Y PEAK</th><th>M</th><th>Q</th><th>s</th><th>S</th></tr></thead><tbody id="items-table"></tbody></table></div></details>
+        </section>
+      </section>
+    </section>
+    <section class="lower-grid">
+      <details class="info-card" open><summary>Model &amp; assumptions</summary><p>Each item’s peak is its maximum quarterly demand across five years. A price-group candidate sets <i>s = ceil(M × peak)</i> and <i>S = s + Q</i>. The browser simulates shared resampled demand scenarios, then selects one candidate per group to minimize inventory value under workload and wait limits.</p><p>Synthetic prices, intermittent demand, one-to-two-quarter lead times, and one purchase per simulated replenishment are demonstration assumptions. The wait proxy uses quarterly increments. The forecast baseline uses a one-standard-deviation safety term and a four-quarter coverage quantity. This prototype addresses Peak Policy only and excludes Appendix B Next Gen.</p></details>
+      <details class="info-card"><summary>Small-case verification</summary><p>Six deterministic items across two price groups. Expected candidate costs, workload, fills, waits, the forecast baseline, and binary optimization outcomes are checked in the browser.</p><button id="check-case" class="secondary-button">Run six-item checks</button><div id="check-status" class="check-status"></div><div class="table-scroll"><table><thead><tr><th>GROUP</th><th>M</th><th>Q</th><th>INVENTORY</th><th>BUYS/YR</th><th>FILLED</th><th>WAIT QTR</th></tr></thead><tbody id="check-table"></tbody></table></div></details>
+    </section>
+    <footer><span>Peak Policy prototype · Synthetic data · No data leaves this browser</span><a href="https://doi.org/10.1287/inte.2015.0829" target="_blank" rel="noreferrer">Bachman et al. (2016), Interfaces 46(1), 18–32 ↗</a></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
